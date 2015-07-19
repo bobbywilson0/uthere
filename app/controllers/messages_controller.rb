@@ -1,13 +1,15 @@
 class MessagesController < ApplicationController
   def create
-    user = User.find_or_create_by(phone_number: params["From"])
+    user = User.find_or_create_by(phone_number: params["From"], conversation_locked: false)
 
     current_conversation = Conversation.where("sender_id = ? OR receiver_id = ?", user.id, user.id).first
     receiver = nil
 
     if current_conversation.nil?
-      receiver = User.where.not(id: user.id).sample
+      receiver = User.where.not(id: user.id, conversation_locked: false).sample
       current_conversation = Conversation.create(sender_id: user.id, receiver_id: receiver.id)
+      user.update_attribute(:conversation_locked, true)
+      receiver.update_attribute(:conversation_locked, true)
     else
       if user.id == current_conversation.sender_id
         receiver = current_conversation.receiver

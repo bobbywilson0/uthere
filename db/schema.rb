@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150719190136) do
+ActiveRecord::Schema.define(version: 20150719202934) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -28,11 +28,14 @@ ActiveRecord::Schema.define(version: 20150719190136) do
     t.datetime "updated_at",      null: false
     t.integer  "user_id"
     t.integer  "conversation_id"
+    t.integer  "sender_id"
+    t.integer  "receiver_id"
   end
 
   create_table "users", force: :cascade do |t|
     t.string  "phone_number"
     t.boolean "needs_to_reply"
+    t.boolean "conversation_locked"
   end
 
 end
