@@ -1,6 +1,6 @@
 class MessagesController < ApplicationController
   def create
-    user = User.find_or_create_by(phone_number: params["From"], conversation_locked: false)
+    user = User.create_with(conversation_locked: false).find_or_create_by(phone_number: params["From"])
 
     current_conversation = Conversation.where("sender_id = ? OR receiver_id = ?", user.id, user.id).first
     receiver = nil
