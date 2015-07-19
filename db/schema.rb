@@ -11,18 +11,23 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150719012911) do
+ActiveRecord::Schema.define(version: 20150719190136) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
+  create_table "conversations", force: :cascade do |t|
+    t.integer "sender_id"
+    t.integer "receiver_id"
+    t.boolean "expired"
+  end
+
   create_table "messages", force: :cascade do |t|
-    t.string   "sender_id"
     t.string   "body"
-    t.string   "receiver_id"
-    t.string   "reply"
-    t.datetime "created_at",  null: false
-    t.datetime "updated_at",  null: false
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+    t.integer  "user_id"
+    t.integer  "conversation_id"
   end
 
   create_table "users", force: :cascade do |t|
