@@ -4,7 +4,7 @@ class Conversation < ActiveRecord::Base
   belongs_to :receiver, foreign_key: 'receiver_id', class_name: "User"
 
   def self.current_conversation_for(user)
-    find_by("expires_at > ? AND (sender_id = ? OR receiver_id = ?)", Time.now.utc, user.id, user.id)
+    user.current_conversation
   end
 
   def recipient(user)
