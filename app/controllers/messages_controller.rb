@@ -6,7 +6,7 @@ class MessagesController < ApplicationController
     receiver = nil
 
     if current_conversation.nil?
-      receiver = User.where(conversation_locked: false).not(id: user.id).sample
+      receiver = User.where(conversation_locked: false).where.not(id: user.id).sample
       current_conversation = Conversation.create(sender_id: user.id, receiver_id: receiver.id)
       user.update_attribute(:conversation_locked, true)
       receiver.update_attribute(:conversation_locked, true)
