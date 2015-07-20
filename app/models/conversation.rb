@@ -15,18 +15,18 @@ class Conversation < ActiveRecord::Base
     end
   end
 
-  def deliver_message(body, sender, receiver)
+  def deliver_message(args = {})
     update_attribute(:expires_at, Time.now + 5.minutes)
-    messages << Message.create(body: body, sender: sender, receiver: receiver)
+    messages << Message.create(body: args[:body], sender: args[:sender], receiver: args[:receiver])
 
     if Rails.env.production?
       Twilio::REST::Client.new.messages.create(from: '+15017084577',
         to: receiver.phone_number,
-        body: body)
+        body: args[:body])
     else
       { from: '+15017084577',
         to: receiver.phone_number,
-        body: body }
+        body: args[:body] }
     end
   end
 end
