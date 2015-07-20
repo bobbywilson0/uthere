@@ -18,13 +18,24 @@ describe Conversation do
     subject { Conversation.create(sender: sender, receiver: receiver) }
 
     it "sends a message" do
-      expect(subject.deliver_message("hi", sender, receiver)).to eq({body: "hi", to: "+14444444444", from: "+15017084577"})
+      expect(subject.deliver_message(body: "hi", sender: sender, receiver: receiver)).to eq({body: "hi", to: "+14444444444", from: "+15017084577"})
     end
 
     it "creates a message model" do
-      subject.deliver_message("hi", sender, receiver)
+      subject.deliver_message(body: "hi", sender: sender, receiver: receiver)
       expect(subject.messages.length).to eq(1)
     end
+  end
+
+  describe "#expired?" do
+    context "returns true if the conversation has expired" do
+      let!(:conversation) {Conversation.create(expires_at: 2.minutes.ago)}
+      it "returns true" do
+        expect(conversation.expired?).to eq(true)
+
+      end
+    end
+
   end
 
   describe ".current_conversation_for" do

@@ -16,6 +16,10 @@ class User < ActiveRecord::Base
     Conversation.where("sender_id = ? OR receiver_id = ?", id, id).uniq
   end
 
+  def last_conversation
+    all_conversations.last
+  end
+
   def current_conversation
     all_conversations.find_by("expires_at > ?", Time.now.utc)
   end

@@ -15,6 +15,22 @@ class Conversation < ActiveRecord::Base
     end
   end
 
+  def expired?
+    expires_at < Time.now
+  end
+
+  def deliver_admin_messsage(args = {})
+    if Rails.env.production?
+      Twilio::REST::Client.new.messages.create(from: '+15017084577',
+        to: args[:receiver].phone_number,
+        body: args[:body])
+    else
+      { from: '+15017084577',
+        to: args[:receiver].phone_number,
+        body: args[:body] }
+    end
+  end
+
   def deliver_message(args = {})
     update_attribute(:expires_at, Time.now + 5.minutes)
     messages << Message.create(body: args[:body], sender: args[:sender], receiver: args[:receiver])
