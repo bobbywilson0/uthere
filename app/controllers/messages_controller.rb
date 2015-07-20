@@ -1,29 +1,17 @@
 class MessagesController < ApplicationController
   def create
-    user = User.create_with(conversation_locked: false).find_or_create_by(phone_number: params["From"])
-
-    current_conversation = Conversation.where("sender_id = ? OR receiver_id = ? AND expires_at >= ?", user.id, user.id, Time.now).first
-    receiver = nil
+    sender = User.find_or_create_by(phone_number: params["From"])
+    conversation = Conversation.current_conversation_for(user)
 
     if current_conversation.nil?
-      receiver = User.where(conversation_locked: false).where.not(id: user.id).sample
-      current_conversation = Conversation.create(sender_id: user.id, receiver_id: receiver.id)
-      user.update_attribute(:conversation_locked, true)
-      receiver.update_attribute(:conversation_locked, true)
+      receiver = User.random_user(user)
+      conversation = Conversation.create(sender: user, receiver: receiver)
     else
-      if user.id == current_conversation.sender_id
-        receiver = current_conversation.receiver
-      else
-        receiver = current_conversation.sender
-      end
+      receiver = current_conversation.recipient(user)
     end
 
-    current_conversation.update_attribute(:expires_at, Time.now + 5.minutes)
-    current_conversation.messages << Message.create(body: params["Body"], sender_id: user.id, receiver_id: receiver.id)
-
-    Twilio::REST::Client.new.messages.create(from: '+15017084577',
-      to: receiver.phone_number,
-      body: params["Body"])
+    conversation.deliver_message(body: params["Body"], sender: sender,
+      receiver: receiver)
 
     render nothing: true
   end
