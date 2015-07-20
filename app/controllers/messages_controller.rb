@@ -1,6 +1,12 @@
 class MessagesController < ApplicationController
   def create
     sender = User.find_or_create_by(phone_number: params["From"])
+
+    if params["Body"].downcase == "stop"
+      sender.all_conversations.each { |c| c.destroy }
+      sender.destroy
+    end
+
     conversation = sender.last_conversation
 
     if conversation.nil?
