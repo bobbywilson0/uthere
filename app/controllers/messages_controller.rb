@@ -2,7 +2,7 @@ class MessagesController < ApplicationController
   def create
     user = User.create_with(conversation_locked: false).find_or_create_by(phone_number: params["From"])
 
-    current_conversation = Conversation.where("sender_id = ? OR receiver_id = ?", user.id, user.id).first
+    current_conversation = Conversation.where("sender_id = ? OR receiver_id = ? AND expires_at >= ?", user.id, user.id, Time.now).first
     receiver = nil
 
     if current_conversation.nil?
@@ -18,6 +18,7 @@ class MessagesController < ApplicationController
       end
     end
 
+    current_conversation.update_attribute(:expires_at, Time.now + 5.minutes)
     current_conversation.messages << Message.create(body: params["Body"], sender_id: user.id, receiver_id: receiver.id)
 
     Twilio::REST::Client.new.messages.create(from: '+15017084577',
