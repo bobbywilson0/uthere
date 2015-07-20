@@ -21,11 +21,11 @@ class Conversation < ActiveRecord::Base
 
     if Rails.env.production?
       Twilio::REST::Client.new.messages.create(from: '+15017084577',
-        to: receiver.phone_number,
+        to: args[:receiver].phone_number,
         body: args[:body])
     else
       { from: '+15017084577',
-        to: receiver.phone_number,
+        to: args[:receiver].phone_number,
         body: args[:body] }
     end
   end
