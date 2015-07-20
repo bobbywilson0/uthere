@@ -7,7 +7,7 @@ class MessagesController < ApplicationController
       receiver = User.random_user(sender)
       conversation = Conversation.create(sender: sender, receiver: receiver)
     elsif conversation.expired?
-      [sender, receiver].map do |user|
+      [conversation.sender, conversation.receiver].map do |user|
         conversation.deliver_admin_messsage(
           body: "Your conversation has expired, send another message to connect with someone new.",
           receiver: user)
