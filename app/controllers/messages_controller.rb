@@ -5,6 +5,7 @@ class MessagesController < ApplicationController
     if params["Body"].downcase == "stop"
       sender.all_conversations.each { |c| c.destroy }
       sender.destroy
+      return render nothing: true
     end
 
     conversation = sender.last_conversation
