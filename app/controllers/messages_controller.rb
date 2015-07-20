@@ -6,7 +6,7 @@ class MessagesController < ApplicationController
     receiver = nil
 
     if current_conversation.nil?
-      receiver = User.where.not(id: user.id, conversation_locked: false).sample
+      receiver = User.where(conversation_locked: false).not(id: user.id).sample
       current_conversation = Conversation.create(sender_id: user.id, receiver_id: receiver.id)
       user.update_attribute(:conversation_locked, true)
       receiver.update_attribute(:conversation_locked, true)
@@ -22,8 +22,8 @@ class MessagesController < ApplicationController
     current_conversation.messages << Message.create(body: params["Body"], sender_id: user.id, receiver_id: receiver.id)
 
     Twilio::REST::Client.new.messages.create(from: '+15017084577',
-                           to: receiver.phone_number,
-                           body: params["Body"])
+      to: receiver.phone_number,
+      body: params["Body"])
 
     render nothing: true
   end
