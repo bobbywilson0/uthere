@@ -3,7 +3,7 @@ class MessagesController < ApplicationController
     sender = User.find_or_create_by(phone_number: params["From"])
     conversation = sender.current_conversation
 
-    if current_conversation.nil?
+    if conversation.nil?
       receiver = User.random_user(sender)
       conversation = Conversation.create(sender: sender, receiver: receiver)
     else
@@ -15,5 +15,4 @@ class MessagesController < ApplicationController
 
     render nothing: true
   end
-
 end
